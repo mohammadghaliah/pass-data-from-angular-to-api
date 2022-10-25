@@ -1,0 +1,22 @@
+3- from body
+
+angular :
+
+  resetPassword(resetPassword: ResetPasswordVM, skipAuthorization: boolean = false) {
+    return this.apiHelper.post(this.apiUrl + "/reset-password", resetPassword, { skipAuthorization: skipAuthorization, notJsonBody: true });
+  }
+
+API :
+
+        [AllowAnonymous]
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Route("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPassword)
+        {
+            ServiceResult serviceResult = await UserService.ResetPassword(resetPassword);
+
+            return GetActionResult(serviceResult);
+        }

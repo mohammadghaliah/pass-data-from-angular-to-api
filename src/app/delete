@@ -1,0 +1,45 @@
+
+Delete 
+
+
+
+        [HttpDelete("account/api-key/{id}")]
+        [Permission(Permissions.ApiSecretKeysDelete)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            ServiceResult serviceResult = await ApiSecretKeyService.DeleteApiKey(id);
+            return GetActionResult(serviceResult);
+        }
+
+      /// <summary>
+        /// Delete specific group from groups depand on group code
+        /// </summary>
+        /// <returns></returns>
+        [ApiKeyAuth]
+        [HttpDelete("app/{appCode}/group/{groupCode}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Delete([FromRoute] OnePassDeleteGroupRequest onePassDeleteGroupRequest)
+        {
+            ServiceResult<OnePassGroup> serviceResult = await GroupBusinessService.Delete(onePassDeleteGroupRequest);
+            return GetActionResult(serviceResult);
+        }
+
+        public class OnePassDeleteGroupRequest
+    {
+        public string AppCode { get; set; }
+
+        public string GroupCode { get; set; }
+    }
+
+
+angulr :
+
+   deleteApiKey(id: number) {
+      return this.apiHelper.delete<ApiSecretKey>(`${this.apiUrl}/account/api-key/${id}`, null, { notJsonBody: true });
+   }

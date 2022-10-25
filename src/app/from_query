@@ -1,0 +1,42 @@
+2- from query
+angular :
+
+  verifyResetPassword(passToken: string, headers?) {
+    return this.apiHelper.get(this.apiUrl + `/verify-reset-password?passToken=${passToken}`, null, {headers:headers, skipAuthorization:true, notJsonBody: true });
+  }
+
+API :
+        [AllowAnonymous]
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [Route("verify-reset-password")]
+        public async Task<IActionResult> VerifyResetPassword([FromQuery] string passToken)
+        {
+            ServiceResult serviceResult = await UserService.VerifyResetPassword(passToken);
+
+            return GetActionResult(serviceResult);
+        }
+
+-----------------------------------------------------------------------------------------------
+angular :
+
+  getSSOAccounts(accountCode?: string,appCode?: string) {
+    if (appCode != null || accountCode != null)
+      return this.apiHelper.get<Array<Account>>(`${this.apiUrl}/accounts?accountCode=${accountCode}&appCode=${appCode}`);
+    else
+      return this.apiHelper.get<Array<Account>>(`${this.apiUrl}/accounts`);
+  }
+
+  API:
+
+        [AllowAnonymous]
+        [HttpGet("accounts")]
+        [ProducesResponseType(typeof(List<PublicAccount>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public  async Task<IActionResult> GetSSOAccounts([FromQuery] string accountCode, [FromQuery] string appCode)
+        {
+            ServiceResult<List<PublicAccount>> ssoServiceResult = await IdentityService.GetSSOAccounts(accountCode, appCode);
+
+            return GetActionResult(ssoServiceResult);
+        }

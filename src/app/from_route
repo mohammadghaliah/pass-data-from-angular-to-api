@@ -1,0 +1,79 @@
+4- from route
+
+angular :
+   assignGroups(userId: number, appId: number, selectedItems: Array<AssignVM>) {
+      return this.apiHelper.post(
+         `${this.apiUrl}/assign/${userId}/${appId}/groups`,
+         selectedItems,
+         { notJsonBody: true }
+      );
+   }
+
+    getProfileAttributeData(directoryId: number) {
+        return this.apiHelper.get<Array<DirectoryProfileAttribute>>(`${this.apiUrl}/${directoryId}`, null, { notJsonBody: true });
+    }
+
+    api :
+
+
+        [Route("{userId}/app/{appId}/groups")]
+        [HttpGet]
+        [ProducesResponseType(typeof(List<Account>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetGroupsByUserIdAndAppId([FromRoute] int userId, [FromRoute] int appId)
+        {
+            ServiceResult<List<Group>> serviceResult = await UserService.GetUserGroupsByUserIdAndAppId(userId, appId);
+            return GetActionResult(serviceResult);
+        }
+
+------------------------------------------------------------------------------------------------
+
+        [HttpGet]
+        [Route("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        pubic async Task<IActionResult> GetDirectoryProfileAttributes(int id)
+        {
+            var serviceResult = await DirectoryProfileAttributeService.GetDirectoryProfileAttributes(id);
+            return GetActionResult(serviceResult);
+        }
+
+    getDirectoryProfileAttributes(directoryId: number) {
+        return this.apiHelper.get<Array<DirectoryProfileAttribute>>(`${this.apiUrl}/${directoryId}/profile-attributes`, null, { notJsonBody: true });
+    }
+
+
+------------------------------------------------------------------------------------------------
+        [HttpGet]
+        [ProducesResponseType(typeof(List<Role>), StatusCodes.Status200OK)]
+        [Route("{userId}/app/{appId}/roles")]
+        public async Task<IActionResult> GetRoles([FromRoute] int userId, [FromQuery] int? groupId, [FromRoute] int appId)
+        {
+            ServiceResult<List<Role>> serviceResult = await UserService.GetRoles(userId, groupId, appId);
+            return GetActionResult(serviceResult);
+        }
+
+getRoles(userId: number, appId: number, groupId?: number) {
+      return this.apiHelper.get<Role[]>(`${this.apiUrl}/${userId}/app/${appId}/roles` + (groupId ? `?groupId=${groupId}` : ''));
+   }
+
+
+----------------------------------------------------------------------
+1 - 
+angular :
+
+  sendResetPassword(accountId: number, username: string) {
+    return this.apiHelper.post(`${this.apiUrl}/send-reset-password/username/${username}/accountId/${accountId}`,null, { notJsonBody: true });
+  }
+
+API:
+        [AllowAnonymous]
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Route("send-reset-password/username/{username}/accountId/{accountId}")]
+        public  async Task<IActionResult> SendResetPassword(string username, int accountId)
+
+        {
+            ServiceResult serviceResult = await UserService.SendResetPassword(username, accountId);
+
+            return GetActionResult(serviceResult);
+        }
